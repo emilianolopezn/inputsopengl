@@ -22,7 +22,20 @@ double tiempoAnterior = 0.0;
 double velocidad = 0.3;
 
 GLfloat angulo = 0.0f;
-GLfloat velocidadAngular = 90;
+GLfloat velocidadAngular = 180.0f;
+
+GLfloat enemigoX = 0.0f;
+GLfloat enemigoY = 0.6f;
+
+
+void checarColisiones() {
+	if (tx >= enemigoX - 0.08 &&
+		tx <= enemigoX + 0.08 &&
+		ty >= enemigoY - 0.08 &&
+		ty <= enemigoY + 0.08) {
+		exit(0);
+	}
+}
 
 void actualizar() { 
 	//Aquí esta bien para cambiar los valores
@@ -33,31 +46,43 @@ void actualizar() {
 	
 	int estadoArriba = glfwGetKey(window, GLFW_KEY_UP);
 	if (estadoArriba == GLFW_PRESS) {
-		if (ty < 1)
-			ty += velocidad * tiempoTranscurrido;
+		/*if (ty < 1)
+			ty += velocidad * tiempoTranscurrido;*/
+		tx += cos((angulo + 90) * (3.14159f / 180.0f)) * 
+			velocidad * tiempoTranscurrido;
+		ty += sin((angulo + 90) * (3.14159f / 180.0f)) *
+			velocidad * tiempoTranscurrido;
 	}
 
-	int estadoAbajo = glfwGetKey(window, GLFW_KEY_DOWN);
+	/*int estadoAbajo = glfwGetKey(window, GLFW_KEY_DOWN);
 	if (estadoAbajo == GLFW_PRESS) {
 		if (ty > -1)
 			ty -= velocidad * tiempoTranscurrido;
+	}*/
+
+	int estadoIzquierda = glfwGetKey(window, GLFW_KEY_LEFT);
+	if (estadoIzquierda == GLFW_PRESS) {
+		angulo += velocidadAngular * tiempoTranscurrido;
+		if (angulo > 360) {
+			angulo -= 360.0f;
+		}
 	}
 
 	int estadoDerecha = glfwGetKey(window, GLFW_KEY_RIGHT);
 	if (estadoDerecha == GLFW_PRESS) {
 		angulo -= velocidadAngular * tiempoTranscurrido;
+		if (angulo < 0) {
+			angulo += 360.0f;
+		}
 	}
 
-	int estadoIzquierda = glfwGetKey(window, GLFW_KEY_LEFT);
-	if (estadoIzquierda == GLFW_PRESS) {
-		angulo += velocidadAngular * tiempoTranscurrido;
-	}
+	checarColisiones();
 
 	tiempoAnterior = tiempoActual;
 
 }
 
-void dibujar() {
+void dibujarHeroe() {
 	glPushMatrix();
 	glTranslatef(tx, ty, 0.0f);
 	glRotatef(angulo, 0.0f, 0.0f, 1.0f);
@@ -69,6 +94,24 @@ void dibujar() {
 	glVertex3f(1.0, -0.5f, 0.0f);
 	glEnd();//Finaliza la rutina
 	glPopMatrix();
+}
+
+void dibujarEnemigo() {
+	glPushMatrix();
+	glTranslatef(enemigoX, enemigoY, 0.0f);
+	glScalef(0.08f, 0.08f, 0.08f);
+	glBegin(GL_TRIANGLES); //Inicia la rutina con un modo de dibujo
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(-1.0f, -0.5f, 0.0f);
+	glVertex3f(0.0f, 0.5f, 0.0f);
+	glVertex3f(1.0, -0.5f, 0.0f);
+	glEnd();//Finaliza la rutina
+	glPopMatrix();
+}
+
+void dibujar() {
+	dibujarHeroe();
+	dibujarEnemigo();
 }
 
 void key_callback(GLFWwindow* window, int key,
