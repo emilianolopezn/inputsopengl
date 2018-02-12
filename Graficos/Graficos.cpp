@@ -26,6 +26,12 @@ GLfloat velocidadAngular = 180.0f;
 
 GLfloat enemigoX = 0.0f;
 GLfloat enemigoY = 0.6f;
+GLfloat direccionEmigo = 60;
+
+GLfloat balaX = 0.0f;
+GLfloat balaY = 0.0f;
+GLfloat balaDireccion = 0.0f;
+bool balaDisparando = false;
 
 
 void checarColisiones() {
@@ -34,6 +40,26 @@ void checarColisiones() {
 		ty >= enemigoY - 0.08 &&
 		ty <= enemigoY + 0.08) {
 		exit(0);
+	}
+}
+
+void actualizarEnemigo(double tiempoTranscurrido) {
+	enemigoX += cos((direccionEmigo + 90) * (3.14159f / 180.0f)) *
+		velocidad* 3 * tiempoTranscurrido;
+	enemigoY += sin((direccionEmigo + 90) * (3.14159f / 180.0f)) *
+		velocidad * tiempoTranscurrido;
+	if (enemigoY >= 1.1) {
+		enemigoY = -1;
+	}
+	else if (enemigoY <= -1.1) {
+		enemigoY = 1;
+	}
+
+	if (enemigoX >= 1.1) {
+		enemigoX = -1;
+	}
+	else if (enemigoX <= -1.1) {
+		enemigoX = 1;
 	}
 }
 
@@ -52,6 +78,19 @@ void actualizar() {
 			velocidad * tiempoTranscurrido;
 		ty += sin((angulo + 90) * (3.14159f / 180.0f)) *
 			velocidad * tiempoTranscurrido;
+		if (ty >= 1.1) {
+			ty = -1;
+		} else if (ty <= -1.1) {
+			ty = 1;
+		}
+
+		if (tx >= 1.1) {
+			tx = -1;
+		}
+		else if (tx <= -1.1) {
+			tx = 1;
+		}
+		
 	}
 
 	/*int estadoAbajo = glfwGetKey(window, GLFW_KEY_DOWN);
@@ -76,8 +115,8 @@ void actualizar() {
 		}
 	}
 
+	actualizarEnemigo(tiempoTranscurrido);
 	checarColisiones();
-
 	tiempoAnterior = tiempoActual;
 
 }
